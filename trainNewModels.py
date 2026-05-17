@@ -1,3 +1,5 @@
+import torch
+import copy
 import blackjack
 
 
@@ -8,23 +10,24 @@ import blackjack
 #  dealer showing
 # 
 #
-# 13 nodes for every card's value
-#  1,2,3,4 indicating amount left in deck
+# 10 nodes for every card's value
+#  9 nodes, 0-4 for A-9
+#  1 node, 0-16 for 10-K
 # 
 # 1 node for dealer showing
 #  2-11
 # 
 # 1 node for player sum
 #  4-21
-# 
-# 1 node for player ace
-#  0-4
 #
-# 1 node for bank balance
-#  0-inf
+# 1 node for dealer fluid ace
+#  0-1 #cant have 2 fluid aces
+#  
+# 1 node for player fluid ace
+#  0-1
 #
-# 1 node for bet amount
-#  ?-?
+# 1 node for first turn to enforce double only on first turn
+#  0-1
 # 
 # outputs:
 #  hit
@@ -57,23 +60,54 @@ import blackjack
 #           NN.play()
 #
 #   #fetch top 10%
-#   tempList = sorted(neuralNetworks, key=lambda x: x.fitness, reverse=True)
+#   tempList = sorted(neuralNetworks, key=lambda x: x.reward, reverse=True)
 #   neuralNetworks = tempList[:(n/10)]
 # 
 #   #populate
 #   for j in range(n/10):
-#       neuralNetworks[j].reset(BANK, MIN, MAX)
-#       for k in range(9):
-#           tempNN = copy.deepcopy(neuralNetworks[j])
-#           tempNN.mutate()
-#           neuralNetworks.append(tempNN)
+#       neuralNetworks[j].reset()
+#       oldBrain = copy.deepcopy(neuralNetworks[j].brain.state_dict())
+#       for k in range(n/10*9):
+#           child = blackjack.Blackjack()
+#           child.brain.load_state_dict(oldBrain)
+#           child.mutate()
+#           neuralNetworks.append(child)
 # 
 # 
 
+n = 10 #10% of neural networks per generation
+g = 100 #number of generations
+x = 1000 #games per generation
+
+BlackjackObjects = [blackjack.Blackjack() for i in range(n)]
+
+#generation loop
+for i in range(g):
+    print("Generation " + str(i+1))
+    #simulate games
+    for blackjackObject in BlackjackObjects:
+        for j in range(x):
+            blackjackObject.play()
+    
+    #fetch top 10%
+    tempList = sorted(BlackjackObjects, key=lambda x: x.reward, reverse=True)
+    BlackjackObjects = tempList[:n]
+
+    #populate
+    for j in range(n):
+        BlackjackObjects[j].reset()
+        oldBrain = copy.deepcopy(BlackjackObjects[j].brain.state_dict())
+        for k in range(n*9):
+            child = blackjack.Blackjack()
+            child.brain.load_state_dict(oldBrain)
+            child.mutate()
+            BlackjackObjects.append(child)
 
 
 
-
+finalList = sorted(BlackjackObjects, key=lambda x: x.reward, reverse=True)
+torch.save(finalList[0].brain.state_dict(), "model.pt")
+open("modelReward.txt", "w").write(str(finalList[0].rewardmem))
 
 
 

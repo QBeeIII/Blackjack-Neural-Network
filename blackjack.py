@@ -1,17 +1,3 @@
-
-# 13 nodes for every card's value
-#  1,2,3,4 indicating amount left in deck
-# 
-# 1 node for dealer showing
-#  2-11
-# 
-# 1 node for player sum
-#  4-21
-#
-# perhaps not needed as deck covers what's drawn
-# 1 node for player ace
-#  0-4
-
 import random
 import torch
 import neuralNetwork as BJNN
@@ -52,12 +38,15 @@ class Deck:
 
 class Blackjack:
     def __init__(self):
+        #reward memory
+        self.reward = 0
+        self.rewardmem = 0
         # self.reset(BANK, MIN, MAX)
         self.reset()
         #make neural network
         self.brain = BJNN.DQN(15, 3)
+        
     
-    #hardcoded vals for now
     # def reset(self, bank, min, max):
     def reset(self):
         self.state = [#             index (including card counts)
@@ -68,6 +57,7 @@ class Blackjack:
             0, #player fluid aces   4 (14)
             1  #first turn          5 (15)
             ]
+        self.rewardmem = self.reward
         self.reward = 0
         self.wager = 1 #bet
         self.firstTurn = True
@@ -87,6 +77,7 @@ class Blackjack:
         self.firstTurn = True
         # self.pot = 0
 
+
     def lose(self):
         self.endRound()
         return 0
@@ -103,14 +94,12 @@ class Blackjack:
         self.endRound()
         return 2
 
-
     # PLAYER ACTIONS: start, hit, double, stand
     # returns:
     # -1 = game continues
     #  0 = loss
     #  1 = win
     #  2 = tie
-    #TODO: figure out where to start rounds
     def deal(self):
         # self.pot = self.bet
         # self.bank = self.bank - self.bet
@@ -206,22 +195,6 @@ class Blackjack:
         else:
             return self.lose()
     
-
-
-    def stateAsTensor(self):
-        #original values
-        temp = self.state[0].deckCount.copy()
-        temp.extend(self.state[1:6])
-
-        #normalize to 0-1
-        for i in range(10):
-            temp[i] = temp[i]/4 #card counts to 0-1
-        temp[10] = (temp[10]-2)/9 #dealer showing to 0-1
-        temp[11] = (temp[11]-4)/26 #player sum to 0-1
-
-        return torch.tensor(temp, dtype=torch.float32).unsqueeze(0)
-
-
     #a single game
     def play(self):
         result = self.deal()
@@ -234,6 +207,29 @@ class Blackjack:
                 result = self.stand()
             else:
                 result = self.double()
+
+
+    def mutate(self):
+        mutationStrength = 0.1
+        for param in self.brain.parameters():
+            param.data += torch.randn_like(param) * mutationStrength
+
+    def stateAsTensor(self):
+        #original values
+        temp = self.state[0].deckCount.copy()
+        temp.extend(self.state[1:6])
+
+        #normalize to 0-1
+        for i in range(10):
+            temp[i] = temp[i]/4 #card counts to 0-1
+        temp[10] = (temp[10]-2)/9 #dealer showing to 0-1
+        # the prereq for this is that the game has not ended, so [4-20] ->  17 states
+        temp[11] = (temp[11]-4)/17 #player sum to 0-1
+
+        return torch.tensor(temp, dtype=torch.float32).unsqueeze(0)
+
+
+
                 
 
 

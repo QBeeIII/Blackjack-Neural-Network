@@ -1,5 +1,4 @@
-import torch
-import numpy as np
+import blackjack
 
 
 
@@ -63,9 +62,10 @@ import numpy as np
 # 
 #   #populate
 #   for j in range(n/10):
+#       neuralNetworks[j].reset(BANK, MIN, MAX)
 #       for k in range(9):
 #           tempNN = copy.deepcopy(neuralNetworks[j])
-#           tempNN.tweak()
+#           tempNN.mutate()
 #           neuralNetworks.append(tempNN)
 # 
 # 

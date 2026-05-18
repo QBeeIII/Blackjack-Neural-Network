@@ -107,7 +107,7 @@ for i in range(g):
 
 finalList = sorted(BlackjackObjects, key=lambda x: x.reward, reverse=True)
 torch.save(finalList[0].brain.state_dict(), "model.pt")
-open("modelReward.txt", "w").write(str(finalList[0].rewardmem))
+open("model reward value.txt", "w").write(str(finalList[0].rewardmem))
 
 
 

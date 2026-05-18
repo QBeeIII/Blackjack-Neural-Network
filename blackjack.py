@@ -15,7 +15,7 @@ class Deck:
     def __init__(self):
         #aces are initially 11 and reduced later
         self.deck = [11,2,3,4,5,6,7,8,9,10,10,10,10] * 4
-        #                 A 2 3 4 5 6 7 8 9 [10-K]
+        #             A 2 3 4 5 6 7 8 9 [10-K]
         self.shuffle()
 
     def shuffle(self):
@@ -34,6 +34,19 @@ class Deck:
             self.deckCount[draw-1] = self.deckCount[draw-1] - 1
         # self.drawn.append(self.deck[index])
         return draw
+    
+    def forceDraw(self, value):
+        self.deck.remove(value)
+        self.deck.append(value)
+        #we have 52 items so putting it at the end is sufficient
+        if value == 11:
+            self.deckCount[0] = self.deckCount[0] - 1
+        else:
+            self.deckCount[value-1] = self.deckCount[value-1] - 1
+        return value
+
+        
+
 
 
 class Blackjack:
@@ -229,6 +242,33 @@ class Blackjack:
         return torch.tensor(temp, dtype=torch.float32).unsqueeze(0)
 
 
+    def runScenario(self, dealerShow, playerShow1, playerShow2):
+        self.reset()
+        self.state[1] = self.state[0].forceDraw(dealerShow)
+        self.state[2] = self.state[0].forceDraw(playerShow1) + self.state[0].forceDraw(playerShow2)
+        #aces
+        if dealerShow == 11:
+            self.state[3] = 1
+        if playerShow1 == 11:
+            self.state[4] = 1
+        if  playerShow2 == 11:
+            self.state[4]= self.state[4] + 1
+        if self.state[2] > 21 and self.state[4] > 0:
+            self.state[2] = self.state[2] - 10
+            self.state[4] = self.state[4] - 1
+        
+        #blackjack start
+        if self.state[2] == 21:
+            return "stand"
+        
+        with torch.no_grad():
+            action = self.brain(self.stateAsTensor()).max(1)[1].item()
+        if action == 0:
+            return "hit"
+        elif action == 1:
+            return "stand"
+        else:
+            return "double"
 
                 
 

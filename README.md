@@ -11,7 +11,7 @@ The simulation ran 100 models per generation, 1000 games per model per generatio
 The images are really wide as there is a state for every possible combination of the player's hand without mirroring so just zoom in ((A,2) but not (2,A))
 
 Here is the result of the simple reward system:
-<img width="12387" height="2577" alt="blackjack_strategy_table" src="https://github.com/QBeeIII/Blackjack-Neural-Network/blob/main/blackjack_strategy_table.png?raw=true" />
+<img width="12387" height="2577" alt="blackjack_strategy_table" src="https://github.com/QBeeIII/Blackjack-Neural-Network/blob/main/blackjack_strategy_table.png" />
 
 And the result of the second reward system:
-<img width="12387" height="2577" alt="blackjack_strategy_table" src="https://github.com/QBeeIII/Blackjack-Neural-Network/blob/main/blackjack_strategy_table%20w%20card%20rewards.png?raw=true" />
+<img width="12387" height="2577" alt="blackjack_strategy_table" src="https://github.com/QBeeIII/Blackjack-Neural-Network/blob/main/blackjack_strategy_table%20w%20card%20rewards.png" />

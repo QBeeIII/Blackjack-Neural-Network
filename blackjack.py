@@ -97,13 +97,13 @@ class Blackjack:
 
     def win(self):
         # self.bank = self.bank + 2*self.pot
-        self.reward = self.reward + 2*self.wager# + self.state[2]/21
+        self.reward = self.reward + 2*self.wager + self.state[2]/21
         self.endRound()
         return 1
     
     def tie(self):
         # self.bank = self.bank + self.pot
-        self.reward = self.reward + self.wager# + self.state[2]/21
+        self.reward = self.reward + self.wager + self.state[2]/21
         self.endRound()
         return 2
 
@@ -169,7 +169,7 @@ class Blackjack:
             self.firstTurn = False
             self.state[5] = 0
         else:
-            self.score = -100000000 #discourage after first turn
+            return self.hit()
         
         # self.pot = 2*self.bet
         # self.bank = self.bank - self.bet

@@ -3,7 +3,7 @@ import blackjack
 import matplotlib.pyplot as plt
 
 model = blackjack.Blackjack()
-model.brain.load_state_dict(torch.load("model simple reward.pt", weights_only=True))
+model.brain.load_state_dict(torch.load("models and charts/model simple.pt", weights_only=True))
 
 data = [[] for _ in range(10)]
 

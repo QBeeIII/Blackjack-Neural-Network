@@ -15,3 +15,13 @@ Here is the result of the simple reward system:
 
 And the result of the second reward system:
 <img width="12387" height="2577" alt="blackjack_strategy_table" src="https://github.com/QBeeIII/Blackjack-Neural-Network/blob/main/blackjack_strategy_table%20w%20card%20rewards.png" />
+
+An interesting thing to note is that the models never double down and that is definitely because of how i handled enforcement of the rule. If it wasn't the first turn and the model chose to double down, I set its reward to a large negative number and I guess that it took that as "never double down." I didn't want to convert later double downs into hits because I thought that would make the models confused after the first turn. With masking the doubles and hits past turn 1, these are the results:
+
+Simple reward system:
+<img width="12387" height="2577" alt="blackjack_strategy_table" src="" />
+
+Second reward system:
+<img width="12387" height="2577" alt="blackjack_strategy_table" src="" />
+
+It doesn't seem to care about doubling down still, likely because doubling down doubles the penalty which would happen more often than it doubles reward.
